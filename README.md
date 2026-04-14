@@ -1,5 +1,5 @@
 # Olist E-Commerce AI Assistant
-## Final Project JCAI - Purwadhika 2025
+## Final Project JCAI - Purwadhika 2026
 
 Multi-agent AI system using Claude + Qdrant + SQLite, deployed on GCP.
 
