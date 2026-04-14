@@ -1,0 +1,72 @@
+[tool.poetry]
+name = "olist-ai-assistant"
+version = "1.0.0"
+description = "Multi-agent AI system untuk e-commerce Olist — JCAI Final Project 2025"
+authors = ["Your Team <team@email.com>"]
+readme = "README.md"
+packages = [
+    { include = "agents" },
+    { include = "database" },
+    { include = "utils" },
+]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+# ── LLM & AI ──────────────────────────────────────────────────────────────────
+openai = "^1.35.0"
+
+# ── Vector Database ───────────────────────────────────────────────────────────
+qdrant-client = "^1.9.0"
+
+# ── Observability ─────────────────────────────────────────────────────────────
+langfuse = "^2.36.0"
+
+# ── API Framework ─────────────────────────────────────────────────────────────
+fastapi = "^0.111.0"
+uvicorn = {extras = ["standard"], version = "^0.30.0"}
+python-multipart = "^0.0.9"
+
+# ── Data Processing ───────────────────────────────────────────────────────────
+pandas = "^2.2.0"
+numpy = "^1.26.0"
+scikit-learn = "^1.4.0"
+
+# ── Database ──────────────────────────────────────────────────────────────────
+sqlalchemy = "^2.0.0"
+
+# ── Image / Multimodal ────────────────────────────────────────────────────────
+Pillow = "^10.3.0"
+transformers = "^4.40.0"
+torch = {version = "^2.3.0", source = "pytorch-cpu"}
+sentence-transformers = "^3.0.0"
+
+# ── Streamlit UI ──────────────────────────────────────────────────────────────
+streamlit = "^1.35.0"
+plotly = "^5.22.0"
+
+# ── Utilities ─────────────────────────────────────────────────────────────────
+python-dotenv = "^1.0.1"
+pydantic = "^2.7.0"
+httpx = "^0.27.0"
+tqdm = "^4.66.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.2.0"
+pytest-asyncio = "^0.23.0"
+httpx = "^0.27.0"       # for FastAPI test client
+ruff = "^0.4.0"
+ipykernel = "^6.29.0"
+
+[[tool.poetry.source]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+priority = "explicit"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
