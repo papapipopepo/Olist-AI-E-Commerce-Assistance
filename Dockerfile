@@ -10,8 +10,8 @@ ENV POETRY_NO_INTERACTION=1 \
     POETRY_CACHE_DIR=/tmp/poetry_cache
 
 WORKDIR /app
-COPY pyproject.toml ./
-RUN poetry install --without dev --no-root --no-lock && rm -rf $POETRY_CACHE_DIR
+COPY pyproject.toml poetry.lock ./
+RUN poetry install --without dev --no-root && rm -rf $POETRY_CACHE_DIR
 
 # ─── Runtime stage ────────────────────────────────────────────────────────────
 FROM python:3.11-slim-bookworm AS runtime
@@ -23,20 +23,19 @@ WORKDIR /app
 ENV VIRTUAL_ENV=/app/.venv \
     PATH="/app/.venv/bin:$PATH" \
     PYTHONPATH=/app \
-    PYTHONUNBUFFERED=1 \
-    PORT=8000
+    PYTHONUNBUFFERED=1
 
 COPY --from=builder /app/.venv .venv
 
 # Application code
-COPY main.py .
-COPY agents/ agents/
-COPY utils/ utils/
+COPY ./main.py /app/main.py
+COPY ./agents /app/agents
+COPY ./utils /app/utils
 
 # Database — Python modules + SQLite file (olist.db)
-COPY database/ database/
+COPY ./database /app/database
 
-EXPOSE 8000
+EXPOSE 8080
 
-# Shell form agar $PORT dari Cloud Run terbaca secara dinamis
-CMD uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}
+# sh -c agar variabel $PORT dari Cloud Run terbaca dengan benar
+CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8080}"]

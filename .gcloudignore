@@ -18,4 +18,3 @@ docker-compose.yml
 .idea/
 .DS_Store
 Thumbs.db
-poetry.lock
