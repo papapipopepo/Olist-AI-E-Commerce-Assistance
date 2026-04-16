@@ -18,6 +18,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 API_BASE = os.getenv("API_BASE_URL", "http://localhost:8000")
+SAMPLE_SHOE_IMAGE_URL = "https://images.unsplash.com/photo-1519741491700-4c609e3ee5e4?auto=format&fit=crop&w=800&q=80"
 
 # ─── Page config ──────────────────────────────────────────────────────────────
 st.set_page_config(page_title="Olist AI Assistant", page_icon="🛒",
@@ -317,6 +318,16 @@ elif page == "🔍 Product Search":
     with tab_img:
         st.info("Upload gambar produk → GPT-4o-mini menganalisis → cari produk serupa di database")
 
+        if st.button("🥿 Gunakan contoh gambar sepatu", use_container_width=True):
+            try:
+                resp = requests.get(SAMPLE_SHOE_IMAGE_URL, timeout=20)
+                resp.raise_for_status()
+                st.session_state.image_bytes = resp.content
+                st.session_state.image_results = None
+                st.session_state.image_description = None
+            except Exception as e:
+                st.error(f"Gagal memuat contoh gambar sepatu: {e}")
+
         uploaded = st.file_uploader(
             "Upload Gambar", type=["jpg", "jpeg", "png", "webp"],
             key="img_uploader"
@@ -353,12 +364,15 @@ elif page == "🔍 Product Search":
                 if results:
                     st.markdown(f"**{len(results)} produk serupa ditemukan:**")
                     for r in results:
+                        description = r.get('summary') or r.get('text', '')
+                        if not description:
+                            description = "Deskripsi tidak tersedia."
                         st.markdown(f"""<div class="product-card">
                             <b>🏷️ ID:</b> {r.get('product_id','N/A')} &nbsp;|&nbsp;
                             <b>📦</b> {r.get('category','N/A')} &nbsp;|&nbsp;
                             <b>Skor:</b> {float(r.get('score',0)):.0%}<br>
                             <details><summary style="cursor:pointer;color:#667eea;font-size:.85em">Detail</summary>
-                            <small>{r.get('text','')[:300]}</small></details>
+                            <small>{description}</small></details>
                         </div>""", unsafe_allow_html=True)
                 else:
                     st.warning("Tidak ada produk serupa ditemukan.")
@@ -420,7 +434,7 @@ elif page == "⭐ Recommendations":
         if cols[i % 2].button(ex, key=f"ex_{i}", use_container_width=True):
             st.session_state.rec_query = ex
             with st.spinner(f"Mencari rekomendasi untuk: {ex}"):
-                st.session_state.rec_results = api_recommend(ex, top_k=6)
+                st.session_state.rec_results = api_recommend(ex, top_k=top_k)
             st.rerun()  # rerun SETELAH hasil sudah disimpan ke session_state
 
 
