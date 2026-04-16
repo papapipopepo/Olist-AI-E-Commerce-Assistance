@@ -179,7 +179,7 @@ def render_product_cards(results):
             </span> &nbsp;
             <b>Relevansi:</b> {r.get('relevance_score') or r.get('score',0):.0%}<br>
             <details><summary style="cursor:pointer;color:#667eea;font-size:.85em">Detail</summary>
-            <small>{r.get('summary') or r.get('text','')[:300]}</small></details>
+            <small>{(r.get('summary') or r.get('text','')[:300]).replace('Rp', 'BRL ')}</small></details>
         </div>""", unsafe_allow_html=True)
 
 def render_recommendation_cards(recs):
@@ -379,7 +379,7 @@ elif page == "🔍 Product Search":
                 if results:
                     st.markdown(f"**{len(results)} produk serupa ditemukan:**")
                     for r in results:
-                        description = r.get('summary') or r.get('text', '')
+                        description = (r.get('summary') or r.get('text', '')).replace('Rp', 'BRL ')
                         if not description:
                             description = "Deskripsi tidak tersedia."
                         st.markdown(f"""<div class="product-card">

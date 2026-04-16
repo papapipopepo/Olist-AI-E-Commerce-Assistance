@@ -206,7 +206,7 @@ def build_rag_documents(dfs: dict, output_dir: str):
         sentiment = SENTIMENT_MAP.get(round(avg_score) if pd.notna(avg_score) else None, "tidak diketahui")
 
         avg_price = row.get("avg_price", None)
-        price_str = f"Rp{avg_price:,.0f}" if pd.notna(avg_price) else "harga tidak tersedia"
+        price_str = f"BRL {avg_price:,.0f}" if pd.notna(avg_price) else "harga tidak tersedia"
 
         reviews_text = row.get("reviews_text", "")
         review_snippet = str(reviews_text)[:300] if pd.notna(reviews_text) and reviews_text else ""
@@ -215,7 +215,7 @@ def build_rag_documents(dfs: dict, output_dir: str):
 Kategori: {row.get('category_en', 'tidak diketahui')}
 Berat: {row.get('product_weight_g', 'tidak diketahui')} gram
 Harga rata-rata: {price_str}
-Harga minimum: Rp{row.get('min_price', 0):,.0f} — Harga maksimum: Rp{row.get('max_price', 0):,.0f}
+Harga minimum: BRL {row.get('min_price', 0):,.0f} — Harga maksimum: BRL {row.get('max_price', 0):,.0f}
 Dijual di kota: {row.get('seller_cities', 'tidak diketahui')}
 Rating rata-rata: {f"{avg_score:.1f}/5" if pd.notna(avg_score) else "belum ada rating"} ({row.get('review_count', 0):.0f} ulasan)
 Sentimen ulasan: {sentiment}
