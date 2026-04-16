@@ -36,7 +36,7 @@ class RAGAgent:
                 "avg_price":       r["avg_price"],
                 "sentiment":       r["sentiment"],
                 "relevance_score": round(r["score"], 3),
-                "summary":         r["text"][:400],
+                "summary":         r["text"][:600],
             }
             for r in results
         ]
@@ -73,7 +73,7 @@ class RAGAgent:
                 "product_id":      r["product_id"],
                 "category":        r["category"],
                 "relevance_score": round(r["score"], 3),
-                "summary":         r["text"][:300],
+                "summary":         r["text"][:600],
             }
             for r in results
         ]

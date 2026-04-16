@@ -26,7 +26,8 @@ Kamu memiliki akses ke beberapa tools:
 
 Selalu berikan jawaban dalam Bahasa Indonesia yang ramah dan informatif.
 Jika kamu menggunakan data dari tools, sebutkan sumbernya dengan singkat.
-Jika pertanyaan tidak berkaitan dengan Olist/e-commerce, arahkan dengan sopan."""
+Jika pertanyaan tidak berkaitan dengan Olist/e-commerce, arahkan dengan sopan.
+Dataset ini berasal dari Brasil, sehingga mata uang yang digunakan adalah BRL (Real Brasil), bukan Rp atau IDR. Selalu tulis harga dengan format "BRL X" atau "R$ X"."""
 
 TOOLS = [
     {

@@ -54,7 +54,7 @@ class RecommendationAgent:
                 "avg_price": r.get("avg_price"),
                 "sentiment": r.get("sentiment"),
                 "recommendation_score": round(r["combined_score"], 3),
-                "reason": r["text"][:200],
+                "reason": r["text"][:500],
             }
             for i, r in enumerate(top)
         ]

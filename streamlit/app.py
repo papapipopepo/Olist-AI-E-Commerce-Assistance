@@ -179,7 +179,7 @@ def render_product_cards(results):
             </span> &nbsp;
             <b>Relevansi:</b> {r.get('relevance_score') or r.get('score',0):.0%}<br>
             <details><summary style="cursor:pointer;color:#667eea;font-size:.85em">Detail</summary>
-            <small>{(r.get('summary') or r.get('text','')[:300]).replace('Rp', 'BRL ')}</small></details>
+            <small>{(r.get('summary') or r.get('text','')).replace('Rp', 'BRL ')}</small></details>
         </div>""", unsafe_allow_html=True)
 
 def render_recommendation_cards(recs):
@@ -200,8 +200,8 @@ def render_recommendation_cards(recs):
                 <b>⭐</b> {stars} ({rating:.1f} / 5)<br>
                 <b>💰</b> BRL {r.get('avg_price') or 'N/A'}<br>
                 <b>😊</b> {r.get('sentiment','N/A')}<br>
-                <details><summary style="cursor:pointer;color:#667eea;font-size:.85em">Alasan rekomendasi</summary>
-                <small>{r.get('reason','')[:250]}</small></details>
+                <details><summary style="cursor:pointer;color:#667eea;font-size:.85em">Detail produk</summary>
+                <small>{r.get('reason','').replace('Rp', 'BRL ')}</small></details>
             </div>""", unsafe_allow_html=True)
 
 # ─── Sidebar ──────────────────────────────────────────────────────────────────
