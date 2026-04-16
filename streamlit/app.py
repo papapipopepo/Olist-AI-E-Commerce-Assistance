@@ -19,13 +19,6 @@ load_dotenv()
 
 APP_DIR  = pathlib.Path(__file__).parent
 API_BASE = os.getenv("API_BASE_URL", "http://localhost:8000")
-IMAGE_EXAMPLE_FILE = os.path.join(os.path.dirname(__file__), "image_example")
-IMAGE_EXAMPLE_PATH = None
-try:
-    with open(IMAGE_EXAMPLE_FILE, "r") as f:
-        IMAGE_EXAMPLE_PATH = f.read().strip()
-except Exception:
-    IMAGE_EXAMPLE_PATH = None
 
 # ─── Page config ──────────────────────────────────────────────────────────────
 st.set_page_config(page_title="Olist AI Assistant", page_icon="🛒",
