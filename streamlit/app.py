@@ -8,7 +8,7 @@ Streamlit UI — 4 halaman:
   4. 📊 Analytics Dashboard
 """
 
-import os, json, uuid
+import os, json, uuid, pathlib
 import requests
 import streamlit as st
 import plotly.express as px
@@ -17,6 +17,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+APP_DIR  = pathlib.Path(__file__).parent
 API_BASE = os.getenv("API_BASE_URL", "http://localhost:8000")
 IMAGE_EXAMPLE_FILE = os.path.join(os.path.dirname(__file__), "image_example")
 IMAGE_EXAMPLE_PATH = None
@@ -54,6 +55,10 @@ if "image_description" not in st.session_state:
     st.session_state.image_description = None
 if "image_bytes" not in st.session_state:
     st.session_state.image_bytes = None
+if "text_search_results" not in st.session_state:
+    st.session_state.text_search_results = None
+if "text_search_query" not in st.session_state:
+    st.session_state.text_search_query = ""
 
 # ─── API helpers ──────────────────────────────────────────────────────────────
 def api_chat(msg):
@@ -300,7 +305,8 @@ elif page == "🔍 Product Search":
     # ── Text Search ───────────────────────────────────────────────────────────
     with tab_text:
         c1, c2, c3 = st.columns([3, 1, 1])
-        query = c1.text_input("Cari produk...", placeholder="Sepatu, tas, elektronik...")
+        query = c1.text_input("Cari produk...", placeholder="Sepatu, tas, elektronik...",
+                              value=st.session_state.text_search_query)
         cat_options = ["Semua","health_beauty","bed_bath_table","sports_leisure",
                        "furniture_decor","computers_accessories","housewares",
                        "watches_gifts","telephony","garden_tools"]
@@ -308,17 +314,37 @@ elif page == "🔍 Product Search":
         min_rat    = c3.slider("Min Rating", 1.0, 5.0, 3.0, 0.5)
 
         if st.button("🔍 Cari", use_container_width=True) and query:
+            st.session_state.text_search_query = query
             with st.spinner("Mencari..."):
-                results = api_search(
+                st.session_state.text_search_results = api_search(
                     query,
                     category=None if cat_filter == "Semua" else cat_filter,
                     min_rating=min_rat,
                 )
+
+        if st.session_state.text_search_results is not None:
+            results = st.session_state.text_search_results
             if results:
                 st.markdown(f"**{len(results)} produk ditemukan:**")
                 render_product_cards(results)
             else:
                 st.info("Tidak ada produk ditemukan. Coba query yang berbeda.")
+
+        st.markdown("---")
+        st.markdown("**💡 Coba contoh pencarian:**")
+        text_examples = [
+            "Sepatu olahraga ringan",
+            "Tas kulit untuk kerja",
+            "Headphone bluetooth terbaik",
+            "Peralatan dapur anti lengket",
+        ]
+        cols_ex = st.columns(2)
+        for i, ex in enumerate(text_examples):
+            if cols_ex[i % 2].button(ex, key=f"ts_ex_{i}", use_container_width=True):
+                st.session_state.text_search_query = ex
+                with st.spinner(f"Mencari: {ex}..."):
+                    st.session_state.text_search_results = api_search(ex, min_rating=3.0)
+                st.rerun()
 
     # ── Image Search ──────────────────────────────────────────────────────────
     with tab_img:
@@ -393,6 +419,18 @@ elif page == "🔍 Product Search":
                     st.warning("Tidak ada produk serupa ditemukan.")
         else:
             st.markdown("👆 Upload gambar untuk memulai pencarian")
+            _example_path = APP_DIR / "image_example.jpg"
+            if _example_path.exists():
+                st.markdown("---")
+                st.markdown("**💡 Atau coba contoh gambar:**")
+                c1, c2 = st.columns([1, 3])
+                c1.image(str(_example_path), caption="Contoh: sepatu", width=150)
+                with c2:
+                    if c2.button("👟 Gunakan contoh gambar sepatu", use_container_width=True):
+                        st.session_state.image_bytes = _example_path.read_bytes()
+                        st.session_state.image_results = None
+                        st.session_state.image_description = None
+                        st.rerun()
 
 
 # ══════════════════════════════════════════════════════════════════════════════
