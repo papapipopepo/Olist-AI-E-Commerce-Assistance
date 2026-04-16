@@ -18,7 +18,13 @@ from dotenv import load_dotenv
 load_dotenv()
 
 API_BASE = os.getenv("API_BASE_URL", "http://localhost:8000")
-SAMPLE_SHOE_IMAGE_URL = "https://images.unsplash.com/photo-1519741491700-4c609e3ee5e4?auto=format&fit=crop&w=800&q=80"
+IMAGE_EXAMPLE_FILE = os.path.join(os.path.dirname(__file__), "image_example")
+IMAGE_EXAMPLE_PATH = None
+try:
+    with open(IMAGE_EXAMPLE_FILE, "r") as f:
+        IMAGE_EXAMPLE_PATH = f.read().strip()
+except Exception:
+    IMAGE_EXAMPLE_PATH = None
 
 # ─── Page config ──────────────────────────────────────────────────────────────
 st.set_page_config(page_title="Olist AI Assistant", page_icon="🛒",
@@ -318,17 +324,24 @@ elif page == "🔍 Product Search":
     with tab_img:
         st.info("Upload gambar produk → GPT-4o-mini menganalisis → cari produk serupa di database")
         st.markdown("**Contoh gambar sepatu untuk dicoba:**")
-        st.image(SAMPLE_SHOE_IMAGE_URL, caption="Contoh sepatu untuk pencarian image search", width=320)
 
-        if st.button("🥿 Gunakan contoh gambar sepatu", use_container_width=True):
-            try:
-                resp = requests.get(SAMPLE_SHOE_IMAGE_URL, timeout=20)
-                resp.raise_for_status()
-                st.session_state.image_bytes = resp.content
-                st.session_state.image_results = None
-                st.session_state.image_description = None
-            except Exception as e:
-                st.error(f"Gagal memuat contoh gambar sepatu: {e}")
+        if IMAGE_EXAMPLE_PATH and os.path.exists(IMAGE_EXAMPLE_PATH):
+            st.image(IMAGE_EXAMPLE_PATH, caption="Contoh sepatu untuk pencarian image search", width=320)
+            if st.button("🔍 Cari Produk Mirip Sepatu Ini", use_container_width=True):
+                try:
+                    with open(IMAGE_EXAMPLE_PATH, "rb") as f:
+                        example_bytes = f.read()
+                    results, error = api_image_search(example_bytes, top_k=6)
+                    if error:
+                        st.error(f"Error: {error}")
+                        st.session_state.image_results = []
+                    else:
+                        st.session_state.image_bytes = example_bytes
+                        st.session_state.image_results = results
+                except Exception as e:
+                    st.error(f"Gagal memuat contoh gambar sepatu: {e}")
+        else:
+            st.warning("Contoh gambar sepatu tidak tersedia. Pastikan file 'streamlit/image_example' berisi path gambar yang valid.")
 
         uploaded = st.file_uploader(
             "Upload Gambar", type=["jpg", "jpeg", "png", "webp"],
