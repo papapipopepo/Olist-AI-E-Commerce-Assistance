@@ -342,25 +342,6 @@ elif page == "🔍 Product Search":
     # ── Image Search ──────────────────────────────────────────────────────────
     with tab_img:
         st.info("Upload gambar produk → GPT-4o-mini menganalisis → cari produk serupa di database")
-        st.markdown("**Contoh gambar sepatu untuk dicoba:**")
-
-        if IMAGE_EXAMPLE_PATH and os.path.exists(IMAGE_EXAMPLE_PATH):
-            st.image(IMAGE_EXAMPLE_PATH, caption="Contoh sepatu untuk pencarian image search", width=320)
-            if st.button("🔍 Cari Produk Mirip Sepatu Ini", use_container_width=True):
-                try:
-                    with open(IMAGE_EXAMPLE_PATH, "rb") as f:
-                        example_bytes = f.read()
-                    results, error = api_image_search(example_bytes, top_k=6)
-                    if error:
-                        st.error(f"Error: {error}")
-                        st.session_state.image_results = []
-                    else:
-                        st.session_state.image_bytes = example_bytes
-                        st.session_state.image_results = results
-                except Exception as e:
-                    st.error(f"Gagal memuat contoh gambar sepatu: {e}")
-        else:
-            st.warning("Contoh gambar sepatu tidak tersedia. Pastikan file 'streamlit/image_example' berisi path gambar yang valid.")
 
         uploaded = st.file_uploader(
             "Upload Gambar", type=["jpg", "jpeg", "png", "webp"],
