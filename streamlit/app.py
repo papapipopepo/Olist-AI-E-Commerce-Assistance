@@ -317,6 +317,8 @@ elif page == "🔍 Product Search":
     # ── Image Search ──────────────────────────────────────────────────────────
     with tab_img:
         st.info("Upload gambar produk → GPT-4o-mini menganalisis → cari produk serupa di database")
+        st.markdown("**Contoh gambar sepatu untuk dicoba:**")
+        st.image(SAMPLE_SHOE_IMAGE_URL, caption="Contoh sepatu untuk pencarian image search", width=320)
 
         if st.button("🥿 Gunakan contoh gambar sepatu", use_container_width=True):
             try:
