@@ -179,7 +179,7 @@ def render_product_cards(results):
             </span> &nbsp;
             <b>Relevansi:</b> {r.get('relevance_score') or r.get('score',0):.0%}<br>
             <details><summary style="cursor:pointer;color:#667eea;font-size:.85em">Detail</summary>
-            <small>{(r.get('summary') or r.get('text','')).replace('Rp', 'BRL ')}</small></details>
+            <small>{(r.get('summary') or r.get('text','')[:300]).replace('Rp', 'BRL ')}</small></details>
         </div>""", unsafe_allow_html=True)
 
 def render_recommendation_cards(recs):
@@ -200,8 +200,8 @@ def render_recommendation_cards(recs):
                 <b>⭐</b> {stars} ({rating:.1f} / 5)<br>
                 <b>💰</b> BRL {r.get('avg_price') or 'N/A'}<br>
                 <b>😊</b> {r.get('sentiment','N/A')}<br>
-                <details><summary style="cursor:pointer;color:#667eea;font-size:.85em">Detail produk</summary>
-                <small>{r.get('reason','').replace('Rp', 'BRL ')}</small></details>
+                <details><summary style="cursor:pointer;color:#667eea;font-size:.85em">Alasan rekomendasi</summary>
+                <small>{r.get('reason','')[:250]}</small></details>
             </div>""", unsafe_allow_html=True)
 
 # ─── Sidebar ──────────────────────────────────────────────────────────────────
@@ -217,7 +217,7 @@ with st.sidebar:
         "💬 Chat Assistant", "🔍 Product Search",
         "⭐ Recommendations", "📊 Analytics Dashboard"])
     st.markdown("---")
-    st.caption("Final Project JCAI 2025 — Purwadhika")
+    st.caption("Final Project JCAI 2026 — Purwadhika")
     st.caption(f"Model: `{os.getenv('LLM_MODEL','gpt-4o-mini')}`")
     try:
         requests.get(f"{API_BASE}/health", timeout=2)
@@ -379,7 +379,7 @@ elif page == "🔍 Product Search":
                 if results:
                     st.markdown(f"**{len(results)} produk serupa ditemukan:**")
                     for r in results:
-                        description = (r.get('summary') or r.get('text', '')).replace('Rp', 'BRL ')
+                        description = r.get('summary') or r.get('text', '')
                         if not description:
                             description = "Deskripsi tidak tersedia."
                         st.markdown(f"""<div class="product-card">
