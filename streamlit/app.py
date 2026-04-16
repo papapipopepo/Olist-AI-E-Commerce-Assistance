@@ -385,7 +385,7 @@ elif page == "🔍 Product Search":
                         st.markdown(f"""<div class="product-card">
                             <b>🏷️ ID:</b> {r.get('product_id','N/A')} &nbsp;|&nbsp;
                             <b>📦</b> {r.get('category','N/A')} &nbsp;|&nbsp;
-                            <b>Skor:</b> {float(r.get('score',0)):.0%}<br>
+                            <b>Skor:</b> {float(r.get('relevance_score') or r.get('score', 0)):.0%}<br>
                             <details><summary style="cursor:pointer;color:#667eea;font-size:.85em">Detail</summary>
                             <small>{description}</small></details>
                         </div>""", unsafe_allow_html=True)
