@@ -1,5 +1,9 @@
 # Setup Guide — Olist AI Assistant
-## Final Project JCAI 2026 | Purwadhika
+## Final Project JCAI - Purwadhika
+
+**Kelompok 5:**
+- Ezra Satria Bagas Airlangga
+- Fadhlan Rio Lazuardy
 
 ---
 

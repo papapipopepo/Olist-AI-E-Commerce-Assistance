@@ -1,94 +1,112 @@
-# Olist E-Commerce AI Assistant
-## Final Project JCAI 2026 — Purwadhika
+# Olist AI Assistant — E-Commerce Intelligence Platform
 
-Sistem multi-agent AI untuk platform e-commerce Olist Brasil. Menjawab pertanyaan tentang produk, penjual, ulasan, dan tren bisnis menggunakan kombinasi RAG (Qdrant), NL→SQL (SQLite), dan image search.
+**Final Project JCAI - Purwadhika**
 
-## Live Demo
+Kelompok 5:
+- Ezra Satria Bagas Airlangga
+- Fadhlan Rio Lazuardy
 
-| Layanan | URL |
-|---------|-----|
-| Streamlit App | https://olist-ai-e-commerce-assistance-huaayscod8fzqgtqming.streamlit.app |
-| FastAPI Backend | https://olist-api-h57doqcaba-as.a.run.app |
+---
+
+Aplikasi AI berbasis multi-agent untuk menganalisis data e-commerce Olist Brasil.
+Pengguna dapat bertanya secara natural tentang produk, penjual, ulasan pelanggan, dan tren penjualan —
+sistem akan secara otomatis memilih agent yang paling relevan untuk menjawab.
+
+## Demo
+
+| | URL |
+|--|-----|
+| Streamlit App | https://olist-ai-e-commerce-assistance-huaayxkcxxf8fzqgtqming.streamlit.app/ |
+| FastAPI (Cloud Run) | https://olist-api-h57doqcaba-as.a.run.app |
 | API Docs | https://olist-api-h57doqcaba-as.a.run.app/docs |
+
+## Fitur Utama
+
+- **Chat Assistant** — tanya bebas, dijawab oleh orchestrator yang memanggil agent sesuai konteks
+- **Product Search** — semantic search berbasis teks atau gambar (image search via GPT-4o-mini Vision)
+- **Recommendations** — rekomendasi produk berdasarkan preferensi, dikombinasikan dengan rating dan sentimen ulasan
+- **Analytics Dashboard** — visualisasi revenue, top sellers, kategori produk, pengiriman, dan pembayaran
 
 ## Arsitektur
 
 ```
-User → Streamlit UI → FastAPI (Cloud Run)
-                          │
-              ┌───────────┼───────────┐
-              ▼           ▼           ▼
-         RAG Agent    SQL Agent   Analytics Agent
-         (Qdrant)     (SQLite)
-              │
-         Image Search
-         (GPT-4o-mini Vision)
+Streamlit UI  ──►  FastAPI (GCP Cloud Run)
+                         │
+           ┌─────────────┼──────────────┐
+           ▼             ▼              ▼
+      RAG Agent      SQL Agent    Analytics Agent
+      (Qdrant)       (SQLite)
+           │
+      Image Search
+      (GPT-4o-mini Vision)
 ```
 
-## Project Structure
+Orchestrator menerima pesan pengguna dan memutuskan tool mana yang dipanggil menggunakan OpenAI function calling. Hasilnya dikembalikan ke pengguna dalam satu respons koheren.
+
+## Tech Stack
+
+| Layer | Teknologi |
+|-------|-----------|
+| LLM & Vision | OpenAI GPT-4o-mini |
+| Embedding | OpenAI text-embedding-3-small |
+| Vector Search | Qdrant Cloud |
+| SQL Database | SQLite (dibundel dalam Docker image) |
+| Observability | Langfuse |
+| Backend API | FastAPI + Uvicorn |
+| Frontend | Streamlit + Plotly |
+| Container | Docker + GCP Cloud Run (asia-southeast1) |
+| CI/CD | GCP Cloud Build + Artifact Registry |
+
+## Struktur Project
 
 ```
 olist-final-project/
 ├── agents/
-│   ├── orchestrator.py         # Router multi-agent (gpt-4o-mini tool calling)
+│   ├── orchestrator.py         # Router multi-agent (function calling)
 │   ├── rag_agent.py            # Semantic search via Qdrant
-│   ├── sql_agent.py            # NL→SQL via gpt-4o-mini + SQLite
-│   ├── recommendation_agent.py # Product recommendations (semantic + rating boost)
+│   ├── sql_agent.py            # Natural language to SQL
+│   ├── recommendation_agent.py # Rekomendasi produk
 │   └── analytics_agent.py      # Business analytics
 ├── database/
-│   ├── vector_store.py         # Qdrant client (text-embedding-3-small)
+│   ├── vector_store.py         # Qdrant operations
 │   ├── sql_store.py            # SQLite queries
-│   └── olist.db                # SQLite database (git-lfs)
+│   └── olist.db                # SQLite database (git-lfs tracked)
 ├── utils/
-│   ├── image_search.py         # Multimodal search (GPT-4o-mini vision)
+│   ├── image_search.py         # Multimodal image search
 │   ├── observability.py        # Langfuse tracing
-│   └── sentiment.py            # Review sentiment analysis
+│   └── sentiment.py            # Sentiment analysis
 ├── scripts/
-│   ├── prepare_data.py         # CSV → SQLite + RAG documents
-│   └── ingest_vectors.py       # Embed + upload ke Qdrant
+│   ├── prepare_data.py         # CSV → SQLite + dokumen RAG
+│   └── ingest_vectors.py       # Embed dan upload ke Qdrant
 ├── streamlit/
-│   ├── app.py                  # Streamlit UI (4 halaman)
-│   ├── requirements.txt        # Dependencies Streamlit Cloud
+│   ├── app.py                  # UI utama (4 halaman)
+│   ├── requirements.txt        # Dependencies untuk Streamlit Cloud
 │   └── image_example.jpg       # Contoh gambar untuk image search
-├── main.py                     # FastAPI REST API
-├── Dockerfile                  # API container (Poetry-based)
-├── cloudbuild.yaml             # GCP Cloud Build config
-├── docker-compose.yml          # Local dev
-└── pyproject.toml              # Poetry dependency management
+├── main.py                     # FastAPI entry point
+├── Dockerfile                  # Container API
+├── cloudbuild.yaml             # GCP Cloud Build pipeline
+├── docker-compose.yml          # Local development
+└── pyproject.toml              # Poetry dependencies
 ```
 
-## Stack Teknologi
-
-| Komponen | Teknologi |
-|----------|-----------|
-| LLM | OpenAI `gpt-4o-mini` |
-| Embedding | OpenAI `text-embedding-3-small` |
-| Vector DB | Qdrant Cloud |
-| SQL DB | SQLite |
-| Observability | Langfuse |
-| API | FastAPI + Uvicorn |
-| UI | Streamlit + Plotly |
-| Container | Docker + GCP Cloud Run |
-| Build | GCP Cloud Build + Artifact Registry |
-
-## Quick Start (Lokal)
+## Menjalankan Secara Lokal
 
 ```bash
-# 1. Install dependencies
+# Install dependencies
 poetry install && poetry shell
 
-# 2. Konfigurasi environment
-cp .env.example .env  # isi kredensial
+# Salin dan isi environment variables
+cp .env.example .env
 
-# 3. Prepare data (jalankan sekali)
+# Siapkan database (jalankan sekali)
 poetry run python scripts/prepare_data.py
 poetry run python scripts/ingest_vectors.py
 
-# 4. Jalankan API
+# Jalankan API (Terminal 1)
 poetry run python main.py
 
-# 5. Jalankan Streamlit (terminal baru)
+# Jalankan Streamlit (Terminal 2)
 poetry run streamlit run streamlit/app.py
 ```
 
-Lihat [SETUP_GUIDE.md](SETUP_GUIDE.md) untuk panduan lengkap termasuk deploy ke GCP.
+Panduan lengkap setup dan deployment ke GCP tersedia di [SETUP_GUIDE.md](SETUP_GUIDE.md).
