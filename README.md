@@ -1,5 +1,7 @@
 # Olist AI Assistant — E-Commerce Intelligence Platform
 
+![Olist AI Assistant](assets/olist.png)
+
 **Final Project JCAI - Purwadhika**
 
 Kelompok 5:
